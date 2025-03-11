@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, FileIcon, FolderIcon } from "lucide-react";
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-interface FileItem {
+export interface FileItem {
   name: string;
   path: string;
-  type: 'file' | 'folder';
+  type: "file" | "folder";
   children?: FileItem[];
+  content?: string;
 }
 
 interface FileTreeItemProps {
@@ -43,12 +44,12 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ({
           level > 0 && `ml-${level * 4}`
         )}
         onClick={() =>
-          item.type === 'folder'
+          item.type === "folder"
             ? onFolderClick(item.path)
             : onFileClick(item.path)
         }
       >
-        {item.type === 'folder' && (
+        {item.type === "folder" && (
           <ChevronRight
             className={cn(
               "h-4 w-4 shrink-0 transition-transform",
@@ -56,14 +57,14 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ({
             )}
           />
         )}
-        {item.type === 'folder' ? (
+        {item.type === "folder" ? (
           <FolderIcon className="h-4 w-4 text-muted-foreground" />
         ) : (
           <FileIcon className="h-4 w-4 text-muted-foreground" />
         )}
         {item.name}
       </Button>
-      {item.type === 'folder' && isExpanded && item.children && (
+      {item.type === "folder" && isExpanded && item.children && (
         <div>
           {item.children.map((child) => (
             <FileTreeItem
@@ -82,67 +83,20 @@ const FileTreeItem: React.FC<FileTreeItemProps> = ({
   );
 };
 
-const fileStructure: FileItem[] = [
-  {
-    name: "src",
-    path: "/src",
-    type: "folder",
-    children: [
-      {
-        name: "index.html",
-        path: "index.html",
-        type: "file",
-      },
-      {
-        name: "styles",
-        path: "/src/styles",
-        type: "folder",
-        children: [
-          {
-            name: "main.css",
-            path: "main.css",
-            type: "file",
-          },
-        ],
-      },
-      {
-        name: "scripts",
-        path: "/src/scripts",
-        type: "folder",
-        children: [
-          {
-            name: "app.js",
-            path: "app.js",
-            type: "file",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: "public",
-    path: "/public",
-    type: "folder",
-    children: [
-      {
-        name: "assets",
-        path: "/public/assets",
-        type: "folder",
-        children: [],
-      },
-    ],
-  },
-];
-
-export function FileExplorer({ onFileSelect }: { onFileSelect: (path: string) => void }) {
-  const [activeFile, setActiveFile] = useState('index.html');
-  const [expandedFolders, setExpandedFolders] = useState<string[]>(['/']);
+export function FileExplorer({
+  onFileSelect,
+  files,
+}: {
+  onFileSelect: (path: string) => void;
+  files: any;
+}) {
+  console.log("files recived", files);
+  const [activeFile, setActiveFile] = useState<string>("");
+  const [expandedFolders, setExpandedFolders] = useState<string[]>(["/"]);
 
   const toggleFolder = (path: string) => {
-    setExpandedFolders(prev =>
-      prev.includes(path)
-        ? prev.filter(p => p !== path)
-        : [...prev, path]
+    setExpandedFolders((prev) =>
+      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
     );
   };
 
@@ -157,7 +111,7 @@ export function FileExplorer({ onFileSelect }: { onFileSelect: (path: string) =>
         <h2 className="font-semibold">Files</h2>
       </div>
       <ScrollArea className="h-[calc(100vh-57px)] p-4">
-        {fileStructure.map((item) => (
+        {files.map((item: any) => (
           <FileTreeItem
             key={item.path}
             item={item}

@@ -1,5 +1,7 @@
+import { FileItem } from "@/components/builder/file-explorer";
+
 export const fileContents: Record<string, string> = {
-  'index.html': `<!DOCTYPE html>
+  "index.html": `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +14,7 @@ export const fileContents: Record<string, string> = {
     <script src="scripts/app.js"></script>
 </body>
 </html>`,
-  'main.css': `body {
+  "main.css": `body {
     font-family: system-ui, -apple-system, sans-serif;
     margin: 0;
     padding: 20px;
@@ -23,31 +25,31 @@ h1 {
     color: #333;
     text-align: center;
 }`,
-  'app.js': `document.addEventListener('DOMContentLoaded', () => {
+  "app.js": `document.addEventListener('DOMContentLoaded', () => {
     console.log('Website loaded successfully!');
-});`
+});`,
 };
 
-export function getFileContent(path: string): string {
-  const normalizedPath = path.replace(/^\/src\//, '').replace(/^\/src\/styles\//, '').replace(/^\/src\/scripts\//, '');
-  return fileContents[normalizedPath] || '// Empty file';
+export function getFileContent(file: FileItem | null): string {
+  if (!file || file.type !== "file") return "// Empty file";
+  return file.content || "// Empty file";
 }
 
 export function getFileLanguage(path: string): string {
-  const ext = path.split('.').pop()?.toLowerCase();
+  const ext = path.split(".").pop()?.toLowerCase();
   switch (ext) {
-    case 'html':
-      return 'html';
-    case 'css':
-      return 'css';
-    case 'js':
-      return 'javascript';
-    case 'json':
-      return 'json';
-    case 'ts':
-    case 'tsx':
-      return 'typescript';
+    case "html":
+      return "html";
+    case "css":
+      return "css";
+    case "js":
+      return "javascript";
+    case "json":
+      return "json";
+    case "ts":
+    case "tsx":
+      return "typescript";
     default:
-      return 'plaintext';
+      return "plaintext";
   }
 }

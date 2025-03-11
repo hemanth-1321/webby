@@ -1,8 +1,9 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { systemPrompt } from "@/lib/defaults/systemprompt";
+import { systemPrompt } from "@/lib/defaults/systemprompt"; // Assuming your system prompt function is here
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY!);
+
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-flash",
   generationConfig: {
@@ -16,9 +17,9 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
-      return new Response(
-        JSON.stringify({ error: "Invalid messages format" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: "Invalid messages format" },
+        { status: 400 }
       );
     }
 
@@ -35,40 +36,27 @@ export async function POST(req: NextRequest) {
       history: chatHistory,
     });
 
-    const lastMessage = messages[messages.length - 1]?.content;
+    const lastMessage = messages[messages.length - 1]?.content?.trim();
     if (!lastMessage) {
-      return new Response(JSON.stringify({ error: "Empty last message" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Empty last message" },
+        { status: 400 }
+      );
     }
 
-    const result = await chat.sendMessageStream(lastMessage);
+    const result = await chat.sendMessage(lastMessage);
 
-    const stream = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of result.stream) {
-          controller.enqueue(chunk.text());
-        }
-        controller.close();
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/plain",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
-      },
+    return NextResponse.json({
+      response: result.response.text(),
     });
   } catch (error) {
     console.error("Chat endpoint error:", error);
-    return new Response(
-      JSON.stringify({
+    return NextResponse.json(
+      {
         error: "AI service unavailable",
         details: error instanceof Error ? error.message : "Unknown error",
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      },
+      { status: 500 }
     );
   }
 }
