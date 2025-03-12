@@ -30,26 +30,26 @@ h1 {
 });`,
 };
 
-export function getFileContent(file: FileItem | null): string {
+export function getFileContent(file: FileItem | null): FileItem | string {
   if (!file || file.type !== "file") return "// Empty file";
   return file.content || "// Empty file";
 }
 
-export function getFileLanguage(path: string): string {
-  const ext = path.split(".").pop()?.toLowerCase();
-  switch (ext) {
-    case "html":
-      return "html";
-    case "css":
-      return "css";
-    case "js":
-      return "javascript";
-    case "json":
-      return "json";
-    case "ts":
-    case "tsx":
-      return "typescript";
-    default:
-      return "plaintext";
-  }
-}
+// export function getFileLanguage(path: string): string {
+//   const ext = path.split(".").pop()?.toLowerCase();
+//   switch (ext) {
+//     case "html":
+//       return "html";
+//     case "css":
+//       return "css";
+//     case "js":
+//       return "javascript";
+//     case "json":
+//       return "json";
+//     case "ts":
+//     case "tsx":
+//       return "typescript";
+//     default:
+//       return "plaintext";
+//   }
+// }

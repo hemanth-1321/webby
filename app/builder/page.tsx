@@ -21,8 +21,8 @@ export default function BuilderPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [code, setCode] = useState<string>();
-  const [currentFile, setCurrentFile] = useState<FileItem | null>(null);
-  console.log("current file", currentFile?.name);
+  const [currentFile, setCurrentFile] = useState<any | null>(null);
+
   const prompt = searchParams.get("prompt");
 
   useEffect(() => {
@@ -93,8 +93,14 @@ export default function BuilderPage() {
         })
       );
     }
-    console.log(files);
+    console.log(
+      "zindagi",
+      files.map((file) => file.content)
+    );
+
+    setCurrentFile(() => files.map((file) => file));
   }, [steps, files]);
+
   async function init() {
     setIsLoading(true);
     try {
@@ -136,7 +142,7 @@ export default function BuilderPage() {
       init();
     }
   }, [prompt]);
-
+  console.log(currentFile?.content);
   return (
     <div className="h-screen bg-background">
       <ResizablePanelGroup direction="horizontal">
@@ -147,13 +153,16 @@ export default function BuilderPage() {
         <ResizableHandle />
 
         <ResizablePanel defaultSize={25} minSize={20}>
-          <FileExplorer onFileSelect={setCurrentFile} files={files} />
+          <FileExplorer
+            onFileSelect={setCurrentFile}
+            files={files.map((file) => file)}
+          />
         </ResizablePanel>
 
         <ResizableHandle />
 
         <ResizablePanel defaultSize={50}>
-          <CodePreview file={currentFile} />
+          <CodePreview currentFile={currentFile} files={files} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

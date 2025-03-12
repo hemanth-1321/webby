@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Code2, Wand2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { BACKEND_URL } from "@/lib/config";
+
 export function Hero() {
   const [prompt, setPrompt] = useState("");
   const router = useRouter();
