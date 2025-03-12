@@ -89,6 +89,7 @@ export default function BuilderPage() {
           return {
             ...s,
             status: "completed",
+            completed: true,
           };
         })
       );
