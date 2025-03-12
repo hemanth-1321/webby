@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Code2, Wand2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "../ThemeToggle";
 
 export function Hero() {
   const [prompt, setPrompt] = useState("");

@@ -94,10 +94,6 @@ export default function BuilderPage() {
         })
       );
     }
-    console.log(
-      "zindagi",
-      files.map((file) => file.content)
-    );
 
     setCurrentFile(() => files.map((file) => file));
   }, [steps, files]);
@@ -145,7 +141,7 @@ export default function BuilderPage() {
   }, [prompt]);
   console.log(currentFile?.content);
   return (
-    <div className="h-screen bg-background">
+    <div className="mt-20 h-screen bg-background">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={25} minSize={20}>
           <StepsPanel steps={steps} isLoading={isLoading} />

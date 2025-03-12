@@ -7,7 +7,7 @@ export default function Home() {
   );
   console.log(x);
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <main className=" mt-20 min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <Hero />
       <Features />
     </main>
