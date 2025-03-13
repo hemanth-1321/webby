@@ -2,6 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Step } from "@/types/types";
 import { Loader2 } from "lucide-react"; // Using Lucide React for the spinner
+import { Textarea } from "../ui/textarea";
 
 interface StepsPanelProps {
   steps: Step[];
@@ -12,21 +13,20 @@ export const StepsPanel: React.FC<StepsPanelProps> = ({ steps, isLoading }) => {
   console.log("steps received", steps);
 
   return (
-    <div className="h-full border-r">
+    <div className="h-full flex flex-col border-r">
       <div className="p-4 border-b">
         <h2 className="font-semibold">Build Steps</h2>
       </div>
 
-      {/* Loading State */}
       {isLoading ? (
         <div
-          className="flex items-center justify-center h-[calc(100vh-57px)]"
+          className="flex items-center justify-center flex-1"
           aria-busy="true"
         >
           <Loader2 className="animate-spin text-primary w-8 h-8" />
         </div>
       ) : (
-        <ScrollArea className="h-[calc(100vh-57px)] p-4">
+        <ScrollArea className="flex-1 p-4">
           {steps.map((step, index) => (
             <div
               key={index}
@@ -53,6 +53,11 @@ export const StepsPanel: React.FC<StepsPanelProps> = ({ steps, isLoading }) => {
           ))}
         </ScrollArea>
       )}
+
+      {/* Ensure the textarea is always visible */}
+      <div className="p-4 mb-20 border-t">
+        <Textarea placeholder="Add notes here..." className="w-full" />
+      </div>
     </div>
   );
 };

@@ -14,6 +14,8 @@ import {
 import axios from "axios";
 import { BACKEND_URL } from "@/lib/config";
 import { parseXml } from "@/lib/parser";
+import { useWebContainer } from "@/hooks/useWebContainer";
+import { FileNode } from "@webcontainer/api";
 
 export default function BuilderPage() {
   const searchParams = useSearchParams();
@@ -22,7 +24,7 @@ export default function BuilderPage() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [code, setCode] = useState<string>();
   const [currentFile, setCurrentFile] = useState<any | null>(null);
-
+  const webcontainer = useWebContainer();
   const prompt = searchParams.get("prompt");
 
   useEffect(() => {
@@ -97,6 +99,46 @@ export default function BuilderPage() {
 
     setCurrentFile(() => files.map((file) => file));
   }, [steps, files]);
+
+  useEffect(() => {
+    const createMountStructure = (files: FileItem[]): Record<string, any> => {
+      const mountStructure: Record<string, any> = {};
+
+      const processFile = (file: FileItem, isRootFolder: boolean): any => {
+        if (file.type === "folder") {
+          return {
+            directory: file.children
+              ? Object.fromEntries(
+                  file.children.map((child) => [
+                    child.name,
+                    processFile(child, false),
+                  ])
+                )
+              : {},
+          };
+        } else if (file.type === "file") {
+          return {
+            file: {
+              contents: file.content || "",
+            },
+          };
+        }
+      };
+
+      // Process each top-level file/folder
+      files.forEach((file) => {
+        mountStructure[file.name] = processFile(file, true);
+      });
+
+      return mountStructure;
+    };
+
+    const mountStructure = createMountStructure(files);
+
+    // Mount the structure if WebContainer is available
+    console.log("webcontainer", mountStructure);
+    webcontainer?.mount(mountStructure);
+  }, [files, webcontainer]);
 
   async function init() {
     setIsLoading(true);
