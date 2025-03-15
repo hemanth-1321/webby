@@ -10,7 +10,7 @@ interface StepsPanelProps {
 }
 
 export const StepsPanel: React.FC<StepsPanelProps> = ({ steps, isLoading }) => {
-  console.log("steps received", steps);
+  // console.log("steps received", steps);
 
   return (
     <div className="h-full flex flex-col border-r">

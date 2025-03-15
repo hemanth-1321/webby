@@ -90,7 +90,7 @@ export function FileExplorer({
   onFileSelect: (path: string) => void;
   files: any;
 }) {
-  console.log("files recived", files);
+  // console.log("files recived", files);
   const [activeFile, setActiveFile] = useState<string>("");
   const [expandedFolders, setExpandedFolders] = useState<string[]>(["/"]);
 

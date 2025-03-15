@@ -27,6 +27,7 @@ export default function BuilderPage() {
   const webcontainer = useWebContainer();
   const prompt = searchParams.get("prompt");
 
+  console.log("builder", webcontainer);
   useEffect(() => {
     let originalFiles = [...files];
     let updateHappened = false;
@@ -35,8 +36,8 @@ export default function BuilderPage() {
       .map((step) => {
         updateHappened = true;
         if (step?.type === StepType.CreateFile) {
-          let parsedPath = step.path?.split("/") ?? []; // ["src", "components", "App.tsx"]
-          let currentFileStructure = [...originalFiles]; // {}
+          let parsedPath = step.path?.split("/") ?? [];
+          let currentFileStructure = [...originalFiles];
           let finalAnswerRef = currentFileStructure;
 
           let currentFolder = "";
@@ -46,7 +47,6 @@ export default function BuilderPage() {
             parsedPath = parsedPath.slice(1);
 
             if (!parsedPath.length) {
-              // final file
               let file = currentFileStructure.find(
                 (x) => x.path === currentFolder
               );
@@ -61,12 +61,10 @@ export default function BuilderPage() {
                 file.content = step.code;
               }
             } else {
-              /// in a folder
               let folder = currentFileStructure.find(
                 (x) => x.path === currentFolder
               );
               if (!folder) {
-                // create the folder
                 currentFileStructure.push({
                   name: currentFolderName,
                   type: "folder",
@@ -125,7 +123,6 @@ export default function BuilderPage() {
         }
       };
 
-      // Process each top-level file/folder
       files.forEach((file) => {
         mountStructure[file.name] = processFile(file, true);
       });
@@ -133,11 +130,10 @@ export default function BuilderPage() {
       return mountStructure;
     };
 
-    const mountStructure = createMountStructure(files);
-
-    // Mount the structure if WebContainer is available
-    console.log("webcontainer", mountStructure);
-    webcontainer?.mount(mountStructure);
+    if (files.length > 0 && webcontainer) {
+      const mountStructure = createMountStructure(files);
+      webcontainer.mount(mountStructure);
+    }
   }, [files, webcontainer]);
 
   async function init() {
@@ -145,7 +141,6 @@ export default function BuilderPage() {
     try {
       const response = await axios.post(`${BACKEND_URL}/template`, { prompt });
       const { prompts, uiPrompts } = response.data;
-      console.log("UI Prompts Response:", uiPrompts);
 
       setSteps(
         parseXml(uiPrompts?.[0]).map((x: Step) => ({
@@ -168,11 +163,7 @@ export default function BuilderPage() {
           status: "pending" as "pending",
         })),
       ]);
-
-      console.log("Chat Response:", stepresponse.data.response);
-    } catch (error) {
-      console.error("Error initializing steps:", error);
-    }
+    } catch (error) {}
     setIsLoading(false);
   }
 
@@ -181,7 +172,7 @@ export default function BuilderPage() {
       init();
     }
   }, [prompt]);
-  console.log(currentFile?.content);
+
   return (
     <div className="mt-20 h-screen bg-background">
       <ResizablePanelGroup direction="horizontal">
@@ -201,7 +192,11 @@ export default function BuilderPage() {
         <ResizableHandle />
 
         <ResizablePanel defaultSize={50}>
-          <CodePreview currentFile={currentFile} files={files} />
+          <CodePreview
+            currentFile={currentFile}
+            files={files}
+            webContainer={webcontainer}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

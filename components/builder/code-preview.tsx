@@ -5,22 +5,48 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Code2, Eye } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { FileItem } from "./file-explorer";
+import { WebContainer } from "@webcontainer/api";
+import { PreviewFrame } from "./PreviewFrame";
 
 interface CodePreviewProps {
   currentFile: string; // currentFile is just the path string
   files: FileItem[];
+  webContainer?: any;
 }
 
-export function CodePreview({ currentFile, files }: CodePreviewProps) {
+export function CodePreview({
+  currentFile,
+  files,
+  webContainer,
+}: CodePreviewProps) {
   const [code, setCode] = useState("");
   const [fileName, setFileName] = useState("");
+  const [url, setUrl] = useState("");
+
+  // useEffect(() => {
+  //   console.log("page mounted", webContainer?.spawn("npm", ["install"]));
+  // }, []);
+  // async function main() {
+  //   const installProcess = await webContainer?.spawn("npm", ["install"]);
+  //   installProcess?.output.pipeTo(
+  //     new WritableStream({
+  //       write(data) {
+  //         console.log("installing", data);
+  //       },
+  //     })
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   main();
+  // }, []);
 
   useEffect(() => {
     if (currentFile) {
-      console.log("current file", currentFile);
+      // console.log("current file", currentFile);
       // Find the file recursively using the path
       const selectedFile = findFileByPath(files, currentFile);
-      console.log("selectedFile", selectedFile);
+      // console.log("selectedFile", selectedFile);
 
       if (selectedFile) {
         setCode(selectedFile.content || "");
@@ -102,11 +128,7 @@ export function CodePreview({ currentFile, files }: CodePreviewProps) {
         />
       </TabsContent>
       <TabsContent value="preview" className="h-[calc(100vh-97px)]">
-        <iframe
-          title="Preview"
-          className="w-full h-full"
-          srcDoc={fileName.endsWith(".html") ? code : ""}
-        />
+        <PreviewFrame files={files} webContainer={webContainer} />
       </TabsContent>
     </Tabs>
   );
